@@ -95,7 +95,7 @@ class PowerTable extends Component {
     if (addPersion(params)) {
       if (passwr === conpasswr) {
         postDate("/user", params).then(data => {
-          debugger
+          
           if (data&&data.code === 200) {
             message.info("添加成功！");
             this.setState(this.getInit()) 

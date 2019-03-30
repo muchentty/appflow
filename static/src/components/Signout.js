@@ -6,7 +6,7 @@ import "./login.css"
 class Signout extends Component {
    
     login=()=>{
-        createHashHistory.router.push("/")
+        createHashHistory().push("/")
     }
     render() {
         return (

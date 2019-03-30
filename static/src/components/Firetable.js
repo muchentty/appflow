@@ -20,10 +20,11 @@ class InputTable extends Component {
     
     if(firereg(this.state)){
       let params=Object.assign({},this.state)
-      let startdata = `${this.state.begindata} +" " +  ${this.state.beginTime}`.replace(new RegExp("-","gm"),"/");
+      debugger
+      let startdata = `${params.begindata}  ${params.beginTime}`.replace(new RegExp("-","gm"),"/");
       let startdataM=(new Date(startdata)).getTime();
       params.beginTime= startdataM/1000;
-      let enddata = `${this.state.enddata} +" " +  ${this.state.endTime}`.replace(new RegExp("-","gm"),"/");
+      let enddata = `${params.enddata}  ${params.endTime}`.replace(new RegExp("-","gm"),"/");
       let enddataM=(new Date(enddata)).getTime()
       params.endTime= enddataM/1000
       postDate("/addapproval", params).then(data => {

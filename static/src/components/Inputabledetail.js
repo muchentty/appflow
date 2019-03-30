@@ -41,7 +41,7 @@ class Inputabledetail extends Component {
     this.getdata();
   };
   getdata = () => {
-    getData(`/doc?id=${this.props.params.id}`).then(data => {
+    getData(`/doc?id=${this.props.match.params.id}`).then(data => {
       if (data && data.code === 200) {
         this.setState({
           carNumber: data.data.carNumber,
@@ -95,9 +95,9 @@ class Inputabledetail extends Component {
   };
   agree = type => {
     //type=0|1 同意|不同意
-    postDate(`/doc/process/${this.props.params.id}/${type}`).then(data => {
+    postDate(`/doc/process/${this.props.match.params.id}/${type}`).then(data => {
       if (data && data.code === 200) {
-        createHashHistory.goBack();
+        createHashHistory().goBack();
       }
     });
   };
@@ -197,7 +197,7 @@ class Inputabledetail extends Component {
                 <Button
                   block
                   onClick={() => {
-                    createHashHistory.goBack();
+                    createHashHistory().goBack();
                   }}
                 >
                   返回

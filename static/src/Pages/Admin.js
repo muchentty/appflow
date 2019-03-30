@@ -8,6 +8,7 @@ import {loginfailed} from "../utlis/loginfailed";
 class Admin extends Component {
   state = {
     type: sessionStorage.getItem("userType"),
+    typebutton:"power",
     typelist: [
       { name: "权限表", value: "power" },
       { name: "审核明细表", value: "check" }
@@ -17,7 +18,7 @@ class Admin extends Component {
     loginfailed()
   }
   changetype = value => {
-    this.setState({ type: value });
+    this.setState({ typebutton: value });
   };
 
   render() {
@@ -25,10 +26,9 @@ class Admin extends Component {
       <div>
         <Signout/>
         <div style={{ margin: "0 12px" }}>
-          {this.state.type === "power" && <PowerTable />}
+          {this.state.typebutton === "power" && <PowerTable />}
+          {this.state.typebutton === "check" && <CheckTable  type={this.state.type}/>}
         </div>  
-          {this.state.type === "check" && <CheckTable  type={this.state.type}/>}
-       
         <Muenbutton
           type={this.state.type}
           typelist={this.state.typelist}

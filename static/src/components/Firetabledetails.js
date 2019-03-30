@@ -22,7 +22,7 @@ class InputTable extends Component {
     this.getdata();
   };
   getdata = () => {
-    getData(`/approval?id=${this.props.params.id}`).then(data => {
+    getData(`/approval?id=${this.props.match.params.id}`).then(data => {
       if(data&&data.code===200){
         this.setState({ ...data.data });
       }
@@ -31,11 +31,11 @@ class InputTable extends Component {
   agree=(type,)=>{
     //type=0|1 同意|不同意
   
-    postDate(`process/process/${this.props.params.id}/${type}`).then((data)=>{
+    postDate(`/approval/process/${this.props.match.params.id}/${type}`).then((data)=>{
       if(data&&data.code===200){
-        createHashHistory.goBack();
+        createHashHistory().goBack();
       }
-    })
+    })  
   }
   render() {
     return (
@@ -176,7 +176,7 @@ class InputTable extends Component {
               <Button
                 block
                 onClick={() => {
-                  createHashHistory.goBack();
+                  createHashHistory().goBack();
                 }}
               >
                 返回

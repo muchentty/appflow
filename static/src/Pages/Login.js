@@ -27,19 +27,19 @@ class Login extends Component {
           sessionStorage.setItem("userType", data.data.role);
           switch (data.data.role) {
             case 0: // 管理员
-              createHashHistory.push("/admin");
+              createHashHistory().push("/admin");
               break;
             case 1:
-              createHashHistory.push("/Audited");
+              createHashHistory().push("/Audited");
               break;
             case 2:
-              createHashHistory.push("/Audited");
+              createHashHistory().push("/Audited");
               break;
             case 3:
-              createHashHistory.push("/Audited");
+              createHashHistory().push("/Audited");
               break;
             case 4:
-              createHashHistory.push("/see");
+              createHashHistory().push("/see");
               break;
           }
        
@@ -105,7 +105,8 @@ class Login extends Component {
               <Button
                 block
                 onClick={() => {
-                  createHashHistory.goBack();
+                  
+                  createHashHistory().goBack();
                 }}
               >
                 返回

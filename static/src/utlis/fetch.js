@@ -1,4 +1,4 @@
-let urlip = "http://192.168.2.114:80/api/twe";
+let urlip = "http://39.97.182.42:80/api/twe";
 function postDate(url, data) {
   let urlfetch = urlip + url;
   return fetch(urlfetch, {

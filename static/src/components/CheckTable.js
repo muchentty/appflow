@@ -85,9 +85,9 @@ class CheckTable extends Component {
               <a
                 onClick={() => {
                   if (this.state.type === "inout") {
-                    createHashHistory.push(`/inout/${record.id}`);
+                    createHashHistory().push(`/inout/${record.id}`);
                   } else {
-                    createHashHistory.push(`/fire/${record.id}`);
+                    createHashHistory().push(`/fire/${record.id}`);
                   }
                 }}
               >

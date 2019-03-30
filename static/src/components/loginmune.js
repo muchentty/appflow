@@ -9,6 +9,7 @@ class Muen extends Component {
   }
 
   login = () => {
+    
     createHashHistory().push('/login')
   };
   render() {
