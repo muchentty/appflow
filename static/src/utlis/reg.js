@@ -13,7 +13,7 @@ function inoutreg(list){
     let data = registrue(list.data)
     let time = registrue(list.time)
     let organization = registrue(list.organization)
-    let picUrl = registrue(list.imageUrl);
+    // let picUrl = registrue(list.imageUrl);
     let tel = resisrole(list.tel);
     let numlist = true
     list.numlist.map((item)=>{
@@ -21,7 +21,7 @@ function inoutreg(list){
             numlist=false
         }
     })
-    return (name&&carnum&&data&&time&&organization&&picUrl&&tel&&numlist)
+    return (name&&carnum&&data&&time&&organization&&tel&&numlist)
 
 }
 function firereg(list){

@@ -137,6 +137,7 @@ class CheckTable extends Component {
       }
     });
   };
+  
   ondownload = () => {
     // 使用outerHTML属性获取整个table元素的HTML代码（包括<table>标签），然后包装成一个完整的HTML文档，设置charset为urf-8以防止中文乱码
     let html =

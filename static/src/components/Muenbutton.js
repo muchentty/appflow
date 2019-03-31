@@ -14,9 +14,9 @@ class Muenbutton extends Component {
   render() {
     return (
       <div className="bottom">
-        <RadioGroup onChange={this.handleModeChange} value={this.props.type}  size="lg" style={{width:"100%",height:'100%',   }}>
+        <RadioGroup onChange={this.handleModeChange} value={this.props.type}  size="lg" buttonStyle="solid" style={{width:"100%",height:'100%',}}>
         {this.props.typelist&&this.props.typelist.map((item)=>(
-           <RadioButton style={{width:'50%',height:'100%',lineHeight: "2rem"}} value={item.value}>{item.name}</RadioButton>
+           <RadioButton style={{width:'50%',height:'100%',lineHeight: "2.5rem"}} value={item.value}>{item.name}</RadioButton>
         ))}
         </RadioGroup>
       </div>

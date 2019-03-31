@@ -37,24 +37,72 @@ class InputTable extends Component {
     };
   }
 
-  handleChange = e => {
-    this.getBase64Image(e.file.originFileObj, url => {
+  handleChange = (e,value) => {
+   
+    this.photoCompress(e.currentTarget.files[0],  url => {
       this.setState({ imageUrl: url });
     });
   };
-  beforeUpload = file => {
-    const isLt2M = file.size / 1024 / 1024 < 5;
-    if (!isLt2M) {
-      message.error("图片最大5M!");
-    }
-  };
-  getBase64Image = (img, callback) => {
-    const reader = new FileReader();
 
-    reader.addEventListener("load", () => {
-      callback(reader.result);
+  canvasDataURL = (path, obj, callback)=> {
+   
+  
+    // 默认按比例压缩
+    let img = new Image();
+    img.src = path;
+    img.onload=function(){
+     let that = this;
+    
+    let scale = obj.width / obj.height;
+    let w = obj.width 
+    let h = obj.height || w / scale;
+    let quality = 0.7; // 默认图片质量为0.7
+    //生成canvas
+    let canvas = document.createElement("canvas");
+    let ctx = canvas.getContext("2d");
+    // 创建属性节点
+    let anw = document.createAttribute("width");
+    anw.nodeValue = w;
+    let anh = document.createAttribute("height");
+    anh.nodeValue = h;
+    canvas.setAttributeNode(anw);
+    canvas.setAttributeNode(anh);
+    ctx.drawImage(that, 0, 0, w, h);
+    // 图像质量
+    if (obj.quality && obj.quality <= 1 && obj.quality > 0) {
+      quality = obj.quality;
+    }
+    // quality值越小，所绘制出的图像越模糊
+    let base64 = canvas.toDataURL("image/jpeg", quality);
+    // 回调函数返回base64的值
+    callback(base64);
+   }
+  };
+
+  photoCompress = (file, objDiv) => {
+    if(file.size / 1024 / 1024/1024 >100 ){
+      message.info("图片最大上传100KB")
+      return
+    }else{
+      let reader = new FileReader();
+      reader.addEventListener("load", () => {
+      let re = reader.result;
+      let path = URL.createObjectURL(file)
+      let img = new Image();
+      img.src = path;
+      let w={quality:0.5};
+      if( file.size / 1024 / 1024/1024<20){
+        w.quality=1
+      }
+      img.onload=()=>{
+        w.width=img.width;
+        w.height=img.height;
+        this.canvasDataURL(re, w, objDiv);
+      } 
     });
-    reader.readAsDataURL(img);
+    reader.readAsDataURL(file);
+    }
+    
   };
 
   addgooodslist = index => {
@@ -175,7 +223,10 @@ class InputTable extends Component {
   }
   creat = () => {
     if (inoutreg(this.state)) {
-      let startdata = `${this.state.data + " " + this.state.time}`.replace(new RegExp("-", "gm"), "/");
+      let startdata = `${this.state.data + " " + this.state.time}`.replace(
+        new RegExp("-", "gm"),
+        "/"
+      );
       let startdataM = new Date(startdata).getTime();
       let params = {
         name: this.state.name,
@@ -183,15 +234,14 @@ class InputTable extends Component {
         direction: this.state.dec,
         organization: this.state.organization,
         carNumber: this.state.carnum,
-        date: startdataM/1000,
+        date: startdataM / 1000,
         picUrl: this.state.imageUrl,
         items: this.state.numlist
       };
       postDate("/addoc", params).then(data => {
-      
         if (data && data.code === 200) {
           message.info("申请添加成功！");
-          this.setState(this.getInit()) 
+          this.setState(this.getInit());
         } else {
           message.info("添加失败！");
         }
@@ -310,29 +360,20 @@ class InputTable extends Component {
         <Row className="m18">
           <Col span={24} className="showtype">
             <span className="textRight lin30">图片：</span>
-            <Upload
-              listType="picture-card"
-              className="avatar-uploader"
-              showUploadList={false}
-              beforeUpload={this.beforeUpload}
-              onChange={this.handleChange}
-              customRequest={() => {}}
-            >
-              {this.state.imageUrl ? (
-                <div style={{ width: "10rem", height: "10rem" }}>
-                  <img
-                    src={this.state.imageUrl}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain"
-                    }}
-                  />
-                </div>
-              ) : (
-                uploadButton
-              )}
-            </Upload>
+            {this.state.imageUrl ? (
+              <div style={{ width: "10rem", height: "10rem" }}>
+                <img
+                  src={this.state.imageUrl}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain"
+                  }}
+                />
+              </div>
+            ) : (
+              <input type="file" onChange={this.handleChange} />
+            )}
           </Col>
         </Row>
         <Row className="mt35 mb60">

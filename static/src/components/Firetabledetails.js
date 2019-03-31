@@ -113,12 +113,12 @@ class InputTable extends Component {
                 <DatePicker
                   value={moment(this.state.beginTime*1000)}
                   disabled
-                  className="mr10  r8"
+                  className="mr10  r6"
                 />
                 <TimePicker
                   value={moment(this.state.beginTime*1000)}
                   disabled
-                  className=" r6"
+                  className="r6"
                   defaultOpenValue={moment("00:00:00", "HH:mm:ss")}
                 />
               </div>
@@ -129,7 +129,7 @@ class InputTable extends Component {
               <span className=" textRight lin30">动火结束时间：</span>
               <div className="flex1">
                 <DatePicker
-                  className="mr10 r8"
+                  className="mr10 r6"
                   value={moment(this.state.endTime*1000)}
                   disabled
                 />
