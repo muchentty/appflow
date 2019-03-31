@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Row, Col, Input, Table, Button, Select, message } from "antd";
-import { postDate, getData } from "../utlis/fetch";
+import { postDate, getData,deleteDate } from "../utlis/fetch";
 import { addPersion } from "../utlis/reg";
 
 import "./input.css";
@@ -37,7 +37,27 @@ class PowerTable extends Component {
           title: "密码",
           dataIndex: "passwd",
           key: "password"
-        }
+        },
+        {
+          title: "操作",
+          render: (text, record) => {
+            return (
+              <span>
+                <a
+                  onClick={()=>{
+                    deleteDate(`/user/${record.id}`).then(()=>{
+                      this.getuserlist();
+                    })
+                  }
+                   
+                  }
+                >
+                  删除
+                </a>
+                
+              </span>
+            )}
+          },
       ]
     };
   }
@@ -98,11 +118,13 @@ class PowerTable extends Component {
           
           if (data&&data.code === 200) {
             message.info("添加成功！");
-            this.setState(this.getInit()) 
+            this.setState(this.getInit()) ;
+            this.getuserlist();
           }
         });
       } else {
         message.info("两次密码不一致，请重新输入");
+
       }
     }else{
       message.info("信息填写不正确！");

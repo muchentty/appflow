@@ -30,5 +30,19 @@ function getData(url) {
     referrer: "no-referrer"
   }).then(Response => Response.json()).catch(error => console.error("error", error));
 }
+function deleteDate(url) {
+  let urlfetch = urlip + url;
+  return fetch(urlfetch, {
+    cache: "no-cache",
+    credentials: "same-origin",
+    headers: {
+      "Content-type": "application/json"
+    },
+    method: "delete",
+    mode: "cors",
+    redirect: "follow",
+    referrer: "no-referrer"
+  }).then(Response => Response.json()).catch(error => console.error("error", error));
+}
 
-export {postDate,getData }
+export {postDate,getData ,deleteDate}

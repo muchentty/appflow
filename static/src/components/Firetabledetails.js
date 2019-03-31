@@ -10,7 +10,7 @@ import {
 } from "antd";
 import moment from "moment";
 import Signout from "./Signout";
-import { postDate,getData } from "../utlis/fetch";
+import { postDate,getData,deleteDate } from "../utlis/fetch";
 
 import "./input.css";
 const { TextArea } = Input;
@@ -113,7 +113,7 @@ class InputTable extends Component {
                 <DatePicker
                   value={moment(this.state.beginTime*1000)}
                   disabled
-                  className="mr10  r6"
+                  className="mr10 r8"
                 />
                 <TimePicker
                   value={moment(this.state.beginTime*1000)}
@@ -129,7 +129,7 @@ class InputTable extends Component {
               <span className=" textRight lin30">动火结束时间：</span>
               <div className="flex1">
                 <DatePicker
-                  className="mr10 r6"
+                  className="mr10 r8"
                   value={moment(this.state.endTime*1000)}
                   disabled
                 />
@@ -186,7 +186,7 @@ class InputTable extends Component {
          }
           {(this.state.role === "1" || this.state.role === "2" || this.state.role === "3") && (
             <Row className="mt35 mb60">
-              <Col span={7} offset={3}>
+              <Col span={6} offset={1}>
                 <Button
                   type="primary"
                   block
@@ -197,7 +197,7 @@ class InputTable extends Component {
                   同意
                 </Button>
               </Col>
-              <Col span={7} offset={3}>
+              <Col span={6} offset={2}>
                 <Button
                   block
                   onClick={() => {
@@ -205,6 +205,18 @@ class InputTable extends Component {
                   }}
                 >
                   不同意
+                </Button>
+              </Col>
+              <Col span={6} offset={2}>
+                <Button
+                  block
+                  onClick={() => {
+                    deleteDate(`/resource/${this.props.match.params.id}/2`).then(()=>{
+                      this.getuserlist();
+                    })
+                  }}
+                >
+                  删除
                 </Button>
               </Col>
             </Row>

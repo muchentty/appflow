@@ -12,7 +12,7 @@ import {
 } from "antd";
 import moment from "moment";
 import Signout from "./Signout";
-import { postDate, getData } from "../utlis/fetch";
+import { postDate, getData ,deleteDate} from "../utlis/fetch";
 
 import "./input.css";
 const RadioGroup = Radio.Group;
@@ -41,7 +41,7 @@ class Inputabledetail extends Component {
     this.getdata();
   };
   getdata = () => {
-    getData(`/doc?id=${this.props.match.params.id}`).then(data => {
+    getData(`/doc?id=${this.props.match.params.id}&hasPic=0`).then(data => {
       if (data && data.code === 200) {
         this.setState({
           carNumber: data.data.carNumber,
@@ -51,6 +51,13 @@ class Inputabledetail extends Component {
           items: data.data.items,
           name: data.data.name,
           organization: data.data.organization,
+          picUrl: data.data.picUrl
+        });
+      }
+    });
+    getData(`/doc?id=${this.props.match.params.id}&hasPic=1`).then(data => {
+      if (data && data.code === 200) {
+        this.setState({
           picUrl: data.data.picUrl
         });
       }
@@ -174,11 +181,11 @@ class Inputabledetail extends Component {
             </Col>
           </Row>
           {goodsHtml}
-          <Row className="m18">
+         { this.state.picUrl && <Row className="m18">
             <Col span={24} className="showtype">
               <span className="textRight lin30">图片：</span>
               <div
-                style={{ width: "20rem", height: "20rem" }}
+                style={{ width: "12rem", height: "12rem" }}
               >
                 <img
                   style={{
@@ -190,7 +197,7 @@ class Inputabledetail extends Component {
                 />
               </div>
             </Col>
-          </Row>
+          </Row>}
           {(this.state.role === "4" || this.state.role === "0") && (
             <Row className="mt35 mb60">
               <Col span={16} offset={4}>
@@ -207,7 +214,7 @@ class Inputabledetail extends Component {
           )}
           {(this.state.role === "1" || this.state.role === "2" || this.state.role === "3") && (
             <Row className="mt35 mb60">
-              <Col span={7} offset={3}>
+              <Col span={6} offset={1}>
                 <Button
                   type="primary"
                   block
@@ -218,7 +225,7 @@ class Inputabledetail extends Component {
                   同意
                 </Button>
               </Col>
-              <Col span={7} offset={3}>
+              <Col span={6} offset={2}>
                 <Button
                   block
                   onClick={() => {
@@ -228,8 +235,20 @@ class Inputabledetail extends Component {
                   不同意
                 </Button>
               </Col>
+              <Col span={6} offset={2}>
+                <Button
+                  block
+                  onClick={() => {
+                    deleteDate(`/resource/${this.props.match.params.id}/1`).then(()=>{
+                      this.getuserlist();
+                    })
+                  }}
+                >
+                  删除
+                </Button>
+              </Col>
             </Row>
-          )}
+          )} 
         </div>
       </div>
     );

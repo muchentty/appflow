@@ -7,16 +7,17 @@ import {
   DatePicker,
   TimePicker,
   InputNumber,
-  Upload,
-  Icon,
   Button,
   message
 } from "antd";
 import moment from "moment";
 import locale from "antd/lib/date-picker/locale/zh_CN";
+import $ from "jquery";
 import { postDate } from "../utlis/fetch";
 import { inoutreg } from "../utlis/reg";
 import "./input.css";
+import "./cropper.min.css";
+import "./ImgCropping.css";
 const RadioGroup = Radio.Group;
 
 class InputTable extends Component {
@@ -37,83 +38,110 @@ class InputTable extends Component {
     };
   }
 
-  handleChange = (e,value) => {
-   
-    this.photoCompress(e.currentTarget.files[0],  url => {
-      this.setState({ imageUrl: url });
-    });
+  handleChange = (e, value) => {
+    //弹出框水平垂直居中
+    this.toggle();
+    (window.onresize = function() {
+      var win_height = $(window).height();
+      var win_width = $(window).width();
+      if (win_width <= 768) {
+        $(".tailoring-content").css({
+          top: (win_height - $(".tailoring-content").outerHeight()) / 2,
+          left: 0
+        });
+      } else {
+        $(".tailoring-content").css({
+          top: (win_height - $(".tailoring-content").outerHeight()) / 2,
+          left: (win_width - $(".tailoring-content").outerWidth()) / 2
+        });
+      }
+    })();
   };
 
-  canvasDataURL = (path, obj, callback)=> {
-   
-  
+  toggle=()=>{
+    $(".tailoring-container").toggle();
+  }
+  selectImg=(file)=> {
+    if (!file.currentTarget.files|| !file.currentTarget.files[0]){
+        return;
+    }
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+      let re = reader.result;
+      window.jQuery('#tailoringImg').cropper('replace', re,false);//默认false，适应高度，不失真
+    })
+    reader.readAsDataURL(file.currentTarget.files[0]);
+  }
+
+  sureCut=()=>{
+    if ($("#tailoringImg").attr("src") == null) {
+      return false;
+    } else {
+      let cas = window.jQuery("#tailoringImg").cropper("getCroppedCanvas"); //获取被裁剪后的canvas
+      let base64url = cas.toDataURL("image/png"); //转换为base64地址形式
+      this.photoCompress(base64url,(url)=>{
+        this.setState({imageUrl:url})
+      })
+      //关闭裁剪框
+      this.toggle();
+    }
+  }
+
+  canvasDataURL = (path, obj, callback) => {
     // 默认按比例压缩
     let img = new Image();
     img.src = path;
-    img.onload=function(){
-     let that = this;
-    
-    let scale = obj.width / obj.height;
-    let w = obj.width 
-    let h = obj.height || w / scale;
-    let quality = 0.7; // 默认图片质量为0.7
-    //生成canvas
-    let canvas = document.createElement("canvas");
-    let ctx = canvas.getContext("2d");
-    // 创建属性节点
-    let anw = document.createAttribute("width");
-    anw.nodeValue = w;
-    let anh = document.createAttribute("height");
-    anh.nodeValue = h;
-    canvas.setAttributeNode(anw);
-    canvas.setAttributeNode(anh);
-    ctx.drawImage(that, 0, 0, w, h);
-    // 图像质量
-    if (obj.quality && obj.quality <= 1 && obj.quality > 0) {
-      quality = obj.quality;
-    }
-    // quality值越小，所绘制出的图像越模糊
-    let base64 = canvas.toDataURL("image/jpeg", quality);
-    // 回调函数返回base64的值
-    callback(base64);
-   }
+    img.onload = function() {
+      let that = this;
+
+      let scale = obj.width / obj.height;
+      let w = obj.width;
+      let h = obj.height || w / scale;
+      let quality = 0.7; // 默认图片质量为0.7
+      //生成canvas
+      let canvas = document.createElement("canvas");
+      let ctx = canvas.getContext("2d");
+      // 创建属性节点
+      let anw = document.createAttribute("width");
+      anw.nodeValue = w;
+      let anh = document.createAttribute("height");
+      anh.nodeValue = h;
+      canvas.setAttributeNode(anw);
+      canvas.setAttributeNode(anh);
+      ctx.drawImage(that, 0, 0, w, h);
+      // 图像质量
+      if (obj.quality && obj.quality <= 1 && obj.quality > 0) {
+        quality = obj.quality;
+      }
+      // quality值越小，所绘制出的图像越模糊
+      let base64 = canvas.toDataURL("image/jpeg", quality);
+      // 回调函数返回base64的值
+      callback(base64);
+    };
   };
 
-  photoCompress = (file, objDiv) => {
-    if(file.size / 1024 / 1024/1024 >100 ){
-      message.info("图片最大上传100KB")
-      return
-    }else{
-      let reader = new FileReader();
-      reader.addEventListener("load", () => {
-      let re = reader.result;
-      let path = URL.createObjectURL(file)
-      let img = new Image();
-      img.src = path;
-      let w={quality:0.5};
-      if( file.size / 1024 / 1024/1024<20){
-        w.quality=1
-      }
-      img.onload=()=>{
-        w.width=img.width;
-        w.height=img.height;
-        this.canvasDataURL(re, w, objDiv);
-      } 
-    });
-    reader.readAsDataURL(file);
-    }
-    
+  photoCompress = (re, objDiv) => {
+        let img = new Image();
+        img.src = re;
+        let w = { quality: 0.5 };
+        img.onload = () => {
+          w.width = img.width;
+          w.height = img.height;
+          this.canvasDataURL(re, w, objDiv);
+        };   
   };
 
   addgooodslist = index => {
+    
     let numlist = this.state.numlist.concat([]);
     if (index === 0) {
-      numlist.push({ wupin: "", guige: "", num: 1 });
+      numlist.push({ name: "", spec: "", count: 1 });
     } else {
       numlist.splice(index, 1);
     }
     this.setState({ numlist });
   };
+
   chgoods = (e, index) => {
     let numlist = this.state.numlist.concat([]);
     numlist[index].name = e.currentTarget.value;
@@ -253,12 +281,6 @@ class InputTable extends Component {
 
   getstartData = () => {};
   render() {
-    const uploadButton = (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">图片上传</div>
-      </div>
-    );
     const goodsHtml = this.goodssize();
     return (
       <div>
@@ -360,23 +382,60 @@ class InputTable extends Component {
         <Row className="m18">
           <Col span={24} className="showtype">
             <span className="textRight lin30">图片：</span>
-            {this.state.imageUrl ? (
-              <div style={{ width: "10rem", height: "10rem" }}>
-                <img
-                  src={this.state.imageUrl}
+            <div >
+              <button id="replaceImg" onClick={this.handleChange}  className="l-btn" style={{marginRight:"0.625rem"}}>
+              {!!this.state.imageUrl? "更换图片":"上传图片"}
+              </button>
+              <span >温馨提示：图片截取尽可能的小！！</span>
+              <div style={{width: "12rem",height: "12rem",border: "1px solid  #ccc",padding:"2px", marginTop: "10px" ,display:this.state.imageUrl?"block":"none"   }}>
+                <img 
+                  id="finalImg" 
+                  src={this.state.imageUrl} 
                   style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "contain"
-                  }}
-                />
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain"
+                  }} />
               </div>
-            ) : (
-              <input type="file" onChange={this.handleChange} />
-            )}
+              <div style={{display: "none"}} className="tailoring-container">
+                <div className="black-cloth" onClick={this.closeTailor} />
+                <div className="tailoring-content" style={{top: "146.5px", left: "0px"}}>
+                  <div className="tailoring-content-one" >
+                    <label
+                      title="上传图片"
+                      for="chooseImg"
+                      className="l-btn choose-btn"
+                    >
+                      <input
+                        type="file"
+                        accept="image/jpg,image/jpeg,image/png"
+                        name="file"
+                        id="chooseImg"
+                        className="hidden"
+                        onChange={this.selectImg}
+                      />
+                      选择图片
+                    </label>
+                    <div className="close-tailoring" onClick={this.toggle}>
+                      ×
+                    </div>
+                  </div>
+                  <div className="tailoring-content-two">
+                    <div className="tailoring-box-parcel">
+                      <img id="tailoringImg"  />
+                    </div>
+                  </div>
+                  <div className="tailoring-content-three">
+                    <button className="l-btn sureCut" onClick={this.sureCut}>
+                      确定
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </Col>
         </Row>
-        <Row className="mt35 mb60">
+        <Row className="mt45 mb60">
           <Col span={16} offset={4}>
             <Button
               type="primary"
