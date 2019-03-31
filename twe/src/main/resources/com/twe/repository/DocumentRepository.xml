@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.twe.repository.DocumentRepository">
+    <resultMap id="docResultMap" type="com.twe.dto.DocumentDTO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="contact" column="contact"/>
+        <result property="organization" column="organization"/>
+        <result property="carNumber" column="car_number"/>
+        <result property="direction" column="direction"/>
+        <result property="picUrl" column="pic_url"/>
+        <result property="date" column="date"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <collection property="items" column="id" ofType="com.twe.values.ProductValues" select="selectProductByDocId"
+                    javaType="ArrayList"/>
+    </resultMap>
+
+    <resultMap type="com.twe.values.ProductValues" id="proResultMap">
+        <id property="id" column="id"/>
+        <result property="docId" column="doc_id"/>
+        <result property="name" column="name"/>
+        <result property="spec" column="spec"/>
+        <result property="count" column="count"/>
+    </resultMap>
+
+    <insert id="addDoc" parameterType="com.twe.dto.DocumentDTO" useGeneratedKeys="true" keyProperty="id">
+      insert into t_document
+      (
+      `name`,
+      contact,
+      organization,
+      car_number,
+      direction,
+      pic_url,
+      `date`,
+      `status`,
+      `approval_status`,
+      next_role,
+      create_time
+      )
+      values
+      (
+      #{name,jdbcType=VARCHAR},
+      #{contact,jdbcType=VARCHAR},
+      #{organization,jdbcType=VARCHAR},
+      #{carNumber,jdbcType=VARCHAR},
+      #{direction,jdbcType=VARCHAR},
+      #{picUrl,jdbcType=BLOB},
+      #{date,jdbcType=INTEGER},
+      0,
+      0,
+      1,
+      #{createTime}
+      )
+    </insert>
+
+    <insert id="addapproval" parameterType="com.twe.dto.ApprovalFormDTO" useGeneratedKeys="true" keyProperty="id">
+      insert into t_approval_form
+      (
+      `name`,
+      construction_unit,
+      applicant,
+      teams,
+      part,
+      `type`,
+      `level`,
+      begin_time,
+      end_time,
+      remark,
+      `guardian`,
+      proposer,
+      `status`,
+      `approval_status`,
+      next_role,
+      create_time
+      )
+      values
+      (
+      #{name,jdbcType=VARCHAR},
+      #{constructionUnit,jdbcType=VARCHAR},
+      #{applicant,jdbcType=VARCHAR},
+      #{teams,jdbcType=VARCHAR},
+      #{part,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR},
+      #{level,jdbcType=VARCHAR},
+      #{beginTime,jdbcType=INTEGER},
+      #{endTime,jdbcType=INTEGER},
+      #{remark,jdbcType=VARCHAR},
+      #{guardian,jdbcType=VARCHAR},
+      #{proposer,jdbcType=VARCHAR},
+      0,
+      0,
+      3,
+      #{createTime}
+      )
+    </insert>
+
+    <insert id="addProduct">
+        insert into t_product(doc_id, `name`, `spec`, `count`)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.docId,jdbcType=INTEGER},
+            #{item.name,jdbcType=VARCHAR},#{item.spec,jdbcType=VARCHAR},#{item.count,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <insert id="addUser" parameterType="com.twe.dto.UserDTO" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user(user_name, `passwd`, `role`, `phone_number`, create_time)
+        values (#{userName,jdbcType=VARCHAR}, #{passwd,jdbcType=VARCHAR},#{role,jdbcType=INTEGER},#{phoneNumber,jdbcType=VARCHAR},#{createTime})
+    </insert>
+
+    <select id="findUser" parameterType="com.twe.dto.UserDTO" resultType="com.twe.dto.UserDTO">
+        select id, role from t_user
+        <where>
+            user_name=#{userName} and passwd=#{passwd}
+        </where>
+        limit 1
+    </select>
+
+    <select id="getUserList" parameterType="com.twe.dto.UserDTO" resultType="com.twe.dto.UserDTO">
+        select
+        id,
+        `user_name` as userName,
+        passwd,
+        phone_number as phoneNumber,
+        role,
+        create_time as createTime
+        from t_user
+        order by role,create_time desc
+    </select>
+
+    <select id="findUserPhList" parameterType="int" resultType="String">
+        select phone_number from t_user
+        <where>
+            role=#{role,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="getDoc" parameterType="java.lang.Integer" resultMap="docResultMap">
+        select
+        id,
+        `name`,
+        contact,
+        organization,
+        car_number,
+        direction,
+        `date`,
+        create_time,
+        `status`
+        from t_document
+        <where>
+            id=#{id,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="getDocPic" parameterType="java.lang.Integer" resultMap="docResultMap">
+        select
+        id,
+        pic_url
+        from t_document
+        <where>
+            id=#{id,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="getApproval" parameterType="java.lang.Integer" resultType="com.twe.dto.ApprovalFormDTO">
+        select
+        id,
+        `name`,
+        construction_unit as constructionUnit,
+        applicant,
+        teams,
+        part,
+        `type`,
+        `level`,
+        begin_time as beginTime,
+        end_time as endTime,
+        remark,
+        guardian,
+        proposer,
+        create_time as createTime,
+        `status`
+        from t_approval_form
+        <where>
+            id=#{id,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="getDocList" parameterType="java.util.HashMap" resultType="com.alibaba.fastjson.JSONObject">
+        select id,`name` as proposer, approval_status as approvalStatus, create_time as createTime from t_document
+        <where>
+            <if test="role eq 2">
+                approval_status in (1,3,4)
+            </if>
+        </where>
+        order by id desc
+        <if test="limit > 0">
+            limit #{offset},#{limit}
+        </if>
+    </select>
+
+    <select id="getApprovalList" parameterType="java.util.HashMap" resultType="com.alibaba.fastjson.JSONObject">
+        select id, applicant as proposer, approval_status as approvalStatus, create_time as createTime,begin_time as beginTime, end_time as endTime from t_approval_form
+        <where>
+            <if test="role eq 3">
+                next_role=#{role,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by id desc
+        <if test="limit > 0">
+            limit #{offset,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="selectProductByDocId" parameterType="java.lang.Integer" resultMap="proResultMap">
+        select id, doc_id, `name`, spec, `count` from t_product
+        <where>
+            doc_id=#{id, jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <update id="updateByDocId" parameterType="java.util.HashMap">
+        update t_document
+        <set>
+            status=#{status, jdbcType=INTEGER},
+            approval_status=#{approvalStatus, jdbcType=INTEGER},
+            next_role=#{nextRole, jdbcType=INTEGER},
+            update_time=#{updateTime}
+        </set>
+        <where>
+            id=#{id, jdbcType=INTEGER}
+        </where>
+    </update>
+
+    <update id="updateByApprovalId" parameterType="java.util.HashMap">
+        update t_approval_form
+        <set>
+            status=#{status, jdbcType=INTEGER},
+            approval_status=#{approvalStatus, jdbcType=INTEGER},
+            update_time=#{updateTime}
+        </set>
+        <where>
+            id=#{id, jdbcType=INTEGER}
+        </where>
+    </update>
+
+    <select id="selectDocRoleById" parameterType="java.lang.Integer" resultType="int">
+        select next_role from t_document
+        <where>
+            id=#{id, jdbcType=INTEGER}
+        </where>
+        limit 1
+    </select>
+
+    <delete id="delUser" parameterType="java.lang.Integer">
+        delete from t_user
+        <where>
+            role!=0 and id=#{id, jdbcType=INTEGER}
+        </where>
+    </delete>
+
+    <delete id="delDoc" parameterType="java.lang.Integer">
+        delete from t_document
+        <where>
+            id=#{id, jdbcType=INTEGER}
+        </where>
+    </delete>
+
+    <delete id="delAppro" parameterType="java.lang.Integer">
+        delete from t_approval_form
+        <where>
+            id=#{id, jdbcType=INTEGER}
+        </where>
+    </delete>
+</mapper>
