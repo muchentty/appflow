@@ -5,7 +5,6 @@ import {
   Input,
   DatePicker,
   TimePicker,
-  InputNumber,
   Button,
   message
 } from "antd";
@@ -20,7 +19,6 @@ class InputTable extends Component {
     
     if(firereg(this.state)){
       let params=Object.assign({},this.state)
-      debugger
       let startdata = `${params.begindata}  ${params.beginTime}`.replace(new RegExp("-","gm"),"/");
       let startdataM=(new Date(startdata)).getTime();
       params.beginTime= startdataM/1000;
@@ -181,7 +179,7 @@ class InputTable extends Component {
                 className="mr10 flex1 r8"
               />
               <TimePicker
-                className=" r6"
+                className="r8"
                 onChange={(e, string) => {
                   this.changetime("beginTime", string);
                 }}
@@ -201,7 +199,7 @@ class InputTable extends Component {
                 className="mr10 r8"
               />
               <TimePicker
-                className="r6"
+                className="r8"
                 onChange={(e, string) => {
                   this.changetime("endTime", string);
                 }}

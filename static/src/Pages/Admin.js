@@ -30,7 +30,7 @@ class Admin extends Component {
           {this.state.typebutton === "check" && <CheckTable  type={this.state.type}/>}
         </div>  
         <Muenbutton
-          type={this.state.type}
+          type={this.state.typebutton}
           typelist={this.state.typelist}
           change={this.changetype}
         />

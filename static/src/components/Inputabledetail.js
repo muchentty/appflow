@@ -24,7 +24,8 @@ class Inputabledetail extends Component {
     previewImage: "",
     fileList: [],
     items: [{ name: "", spec: "", count: 1 }],
-    role: sessionStorage.getItem("userType")
+    role: sessionStorage.getItem("userType"),
+    buttontype:0
   };
   handleCancel = () => this.setState({ previewVisible: false });
 
@@ -51,14 +52,13 @@ class Inputabledetail extends Component {
           items: data.data.items,
           name: data.data.name,
           organization: data.data.organization,
-          picUrl: data.data.picUrl
         });
       }
     });
     getData(`/doc?id=${this.props.match.params.id}&hasPic=1`).then(data => {
       if (data && data.code === 200) {
         this.setState({
-          picUrl: data.data.picUrl
+          picUrl: data.data.picUrl?data.data.picUrl:""
         });
       }
     });
@@ -169,7 +169,7 @@ class Inputabledetail extends Component {
               <div className="flex1">
                 <DatePicker
                   disabled
-                  className="mr10  r10"
+                  className="mr10 r6"
                   value={moment(this.state.createTime * 1000)}
                 />
                 <TimePicker
@@ -216,10 +216,12 @@ class Inputabledetail extends Component {
             <Row className="mt35 mb60">
               <Col span={6} offset={1}>
                 <Button
-                  type="primary"
+                  type={this.state.buttontype===0?"primary":""}
                   block
                   onClick={() => {
-                    this.agree(0);
+                    this.setState({ buttontype: 0 }, () => {
+                      this.agree(0);
+                    });
                   }}
                 >
                   同意
@@ -227,10 +229,13 @@ class Inputabledetail extends Component {
               </Col>
               <Col span={6} offset={2}>
                 <Button
-                  block
-                  onClick={() => {
-                    this.agree(1);
-                  }}
+                   block
+                   type={this.state.buttontype===1?"primary":""}
+                   onClick={() => {
+                     this.setState({ buttontype: 1 }, () => {
+                       this.agree(1);
+                     });
+                   }}
                 >
                   不同意
                 </Button>
@@ -238,10 +243,17 @@ class Inputabledetail extends Component {
               <Col span={6} offset={2}>
                 <Button
                   block
+                  type={this.state.buttontype===2?"primary":""}
                   onClick={() => {
-                    deleteDate(`/resource/${this.props.match.params.id}/1`).then(()=>{
-                      this.getuserlist();
-                    })
+                    this.setState({ buttontype: 2 }, () => {
+                      deleteDate(
+                        `/resource/${this.props.match.params.id}/1`
+                      ).then(data => {
+                        if (data && data.code === 200) {
+                          createHashHistory().goBack();
+                        }
+                      });
+                    });
                   }}
                 >
                   删除

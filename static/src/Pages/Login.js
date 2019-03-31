@@ -23,7 +23,7 @@ class Login extends Component {
       message.info("请输入用户名跟密码");
     } else {
       postDate("/login", params).then(data => {
-        if (data&&data.code === 200) {
+        if (data&&data.code === 200 &&data.status===0) {
           sessionStorage.setItem("userType", data.data.role);
           switch (data.data.role) {
             case 0: // 管理员
@@ -43,6 +43,8 @@ class Login extends Component {
               break;
           }
        
+        }else{
+          message.info("账号密码不正确！")
         }
       });
       

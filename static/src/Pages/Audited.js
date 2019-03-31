@@ -5,10 +5,7 @@ import {loginfailed} from "../utlis/loginfailed";
 class Audited extends Component {
   state = {
     type: sessionStorage.getItem("userType"),
-    typelist: [
-      { name: "权限表", value: "power" },
-      { name: "审核明细表", value: "check" }
-    ]
+    
   };
   componentDidMount(){
     loginfailed()

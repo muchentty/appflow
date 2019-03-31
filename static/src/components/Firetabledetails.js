@@ -1,42 +1,38 @@
 import React, { Component } from "react";
-import { createHashHistory } from 'history'
-import {
-  Row,
-  Col,
-  Input,
-  DatePicker,
-  TimePicker,
-  Button
-} from "antd";
+import { createHashHistory } from "history";
+import { Row, Col, Input, DatePicker, TimePicker, Button } from "antd";
 import moment from "moment";
 import Signout from "./Signout";
-import { postDate,getData,deleteDate } from "../utlis/fetch";
+import { postDate, getData, deleteDate } from "../utlis/fetch";
 
 import "./input.css";
 const { TextArea } = Input;
 class InputTable extends Component {
   state = {
-    role:sessionStorage.getItem("userType")
+    role: sessionStorage.getItem("userType"),
+    buttontype:0,
   };
   componentDidMount = () => {
     this.getdata();
   };
   getdata = () => {
     getData(`/approval?id=${this.props.match.params.id}`).then(data => {
-      if(data&&data.code===200){
+      if (data && data.code === 200) {
         this.setState({ ...data.data });
       }
     });
   };
-  agree=(type,)=>{
+  agree = type => {
     //type=0|1 同意|不同意
-  
-    postDate(`/approval/process/${this.props.match.params.id}/${type}`).then((data)=>{
-      if(data&&data.code===200){
-        createHashHistory().goBack();
+
+    postDate(`/approval/process/${this.props.match.params.id}/${type}`).then(
+      data => {
+        if (data && data.code === 200) {
+          createHashHistory().goBack();
+        }
       }
-    })  
-  }
+    );
+  };
   render() {
     return (
       <div>
@@ -97,11 +93,7 @@ class InputTable extends Component {
           <Row className="m18">
             <Col span={24} className="showtype">
               <span className=" textRight lin30">动火作业级别：</span>
-              <Input
-                disabled
-                value={this.state.level}
-                className="flex2 mr10"
-              />
+              <Input disabled value={this.state.level} className="flex2 mr10" />
               <span className="flex15 lin30">级动火</span>
             </Col>
           </Row>
@@ -111,14 +103,14 @@ class InputTable extends Component {
               <span className=" textRight lin30">动火开始时间：</span>
               <div className="flex1">
                 <DatePicker
-                  value={moment(this.state.beginTime*1000)}
+                  value={moment(this.state.beginTime * 1000)}
                   disabled
                   className="mr10 r8"
                 />
                 <TimePicker
-                  value={moment(this.state.beginTime*1000)}
+                  value={moment(this.state.beginTime * 1000)}
                   disabled
-                  className="r6"
+                  className="r8"
                   defaultOpenValue={moment("00:00:00", "HH:mm:ss")}
                 />
               </div>
@@ -130,13 +122,13 @@ class InputTable extends Component {
               <div className="flex1">
                 <DatePicker
                   className="mr10 r8"
-                  value={moment(this.state.endTime*1000)}
+                  value={moment(this.state.endTime * 1000)}
                   disabled
                 />
                 <TimePicker
                   disabled
-                  className="r6"
-                  value={moment(this.state.endTime*1000)}
+                  className="r8"
+                  value={moment(this.state.endTime * 1000)}
                   defaultOpenValue={moment("00:00:00", "HH:mm:ss")}
                 />
               </div>
@@ -171,27 +163,32 @@ class InputTable extends Component {
             </Col>
           </Row>
 
-         {(this.state.role === "4" || this.state.role === "0") && <Row className="mt35 mb60">
-            <Col span={16} offset={4}>
-              <Button
-                block
-                onClick={() => {
-                  createHashHistory().goBack();
-                }}
-              >
-                返回
-              </Button>
-            </Col>
-          </Row>
-         }
-          {(this.state.role === "1" || this.state.role === "2" || this.state.role === "3") && (
+          {(this.state.role === "4" || this.state.role === "0") && (
+            <Row className="mt35 mb60">
+              <Col span={16} offset={4}>
+                <Button
+                  block
+                  onClick={() => {
+                    createHashHistory().goBack();
+                  }}
+                >
+                  返回
+                </Button>
+              </Col>
+            </Row>
+          )}
+          {(this.state.role === "1" ||
+            this.state.role === "2" ||
+            this.state.role === "3") && (
             <Row className="mt35 mb60">
               <Col span={6} offset={1}>
                 <Button
-                  type="primary"
+                  type={this.state.buttontype===0?"primary":""}
                   block
                   onClick={() => {
-                    this.agree(0)
+                    this.setState({ buttontype: 0 }, () => {
+                      this.agree(0);
+                    });
                   }}
                 >
                   同意
@@ -200,8 +197,11 @@ class InputTable extends Component {
               <Col span={6} offset={2}>
                 <Button
                   block
+                  type={this.state.buttontype===1?"primary":""}
                   onClick={() => {
-                    this.agree(1)
+                    this.setState({ buttontype: 0 }, () => {
+                      this.agree(1);
+                    });
                   }}
                 >
                   不同意
@@ -210,10 +210,17 @@ class InputTable extends Component {
               <Col span={6} offset={2}>
                 <Button
                   block
+                  type={this.state.buttontype===2?"primary":""}
                   onClick={() => {
-                    deleteDate(`/resource/${this.props.match.params.id}/2`).then(()=>{
-                      this.getuserlist();
-                    })
+                    this.setState({ buttontype: 2 }, () => {
+                      deleteDate(
+                        `/resource/${this.props.match.params.id}/2`
+                      ).then(data => {
+                        if (data && data.code === 200) {
+                          createHashHistory().goBack();
+                        }
+                      });
+                    });
                   }}
                 >
                   删除

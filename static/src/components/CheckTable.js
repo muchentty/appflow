@@ -116,9 +116,7 @@ class CheckTable extends Component {
     let type = this.state.type == "inout" ? 1 : 2;
     let role = sessionStorage.getItem("userType");
     getData(
-      `/approval/list?type=${type}&role=${role}&page=${
-        this.state.page
-      }&&limit=${this.state.limit}`
+      `/approval/list?type=${type}&role=${role}&page=${this.state.page}&limit=${this.state.limit}`
     ).then(data => {
       if (data && data.code === 200) {
         data.data.map(item => {

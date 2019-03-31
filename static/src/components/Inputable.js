@@ -8,7 +8,8 @@ import {
   TimePicker,
   InputNumber,
   Button,
-  message
+  message,
+  Icon
 } from "antd";
 import moment from "moment";
 import locale from "antd/lib/date-picker/locale/zh_CN";
@@ -416,9 +417,9 @@ class InputTable extends Component {
                       />
                       选择图片
                     </label>
-                    <div className="close-tailoring" onClick={this.toggle}>
-                      ×
-                    </div>
+                  
+                     <Icon type="close-circle" style={{float:"right",fontSize:"1.45rem", color:"#1890ff"}}  onClick={this.toggle}/>
+                 
                   </div>
                   <div className="tailoring-content-two">
                     <div className="tailoring-box-parcel">

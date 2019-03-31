@@ -78,20 +78,11 @@
 }
 .tailoring-content .close-tailoring{
     display: inline-block;
-    height: 1.875rem;
-    width:  1.875rem;
-    border-radius: 100%;
-    background: #eee;
-    color: #fff;
-    font-size: 1.125rem;
-    text-align: center;
-    line-height:  1.875rem;
+    font-size: 1.875rem;
     float: right;
     cursor: pointer;
 }
-.tailoring-content .close-tailoring:hover{
-    background: #ccc;
-}
+
 
 .tailoring-content .tailoring-content-two{
     width: 100%;
