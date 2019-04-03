@@ -46,7 +46,7 @@ class InputTable extends Component {
           <Row className="m18">
             <Col span={24} className="showtype">
               <span className=" textRight lin30">工程名称：</span>
-              <Input value={"深圳市医疗项目"} disabled className="flex1" />
+              <Input value={"深圳市医疗器械项目"} disabled className="flex1" />
             </Col>
           </Row>
           <Row className="m18">
@@ -148,6 +148,23 @@ class InputTable extends Component {
               <TextArea disabled value={this.state.remark} className="flex4" />
             </Col>
           </Row>
+          { this.state.picUrl && <Row className="m18">
+            <Col span={24} className="showtype">
+              <span className="textRight lin30">图片：</span>
+              <div
+                style={{ width: "12rem", height: "12rem" }}
+              >
+                <img
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain"
+                  }}
+                  src={this.state.picUrl}
+                />
+              </div>
+            </Col>
+          </Row>}
           <Row className="m18">
             <Col span={24} className="showtype">
               <span disabled className=" textRight lin30">

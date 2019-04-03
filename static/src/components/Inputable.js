@@ -224,8 +224,7 @@ class InputTable extends Component {
             </div>
           )}
           {index !== 0 && (
-            <Col
-              span={2}
+            <div
               className="addIcon"
               onClick={() => {
                 this.addgooodslist(index);
@@ -237,7 +236,7 @@ class InputTable extends Component {
                   style={{ width: "1.5rem", height: "1.5rem" }}
                 />
               </div>
-            </Col>
+            </div>
           )}
         </div>
       );

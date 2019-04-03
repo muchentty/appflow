@@ -121,12 +121,30 @@ class CheckTable extends Component {
       if (data && data.code === 200) {
         data.data.map(item => {
           new Date(item.createTime);
-          item.approvalStatus =
-            item.approvalStatus === 0
+          if(role==="2"){
+            item.approvalStatus =
+            item.approvalStatus === 1
               ? "未审核"
-              : item.approvalStatus === 1
+              : item.approvalStatus === 3
               ? "审核通过"
               : "审核不通过";
+          }else if(role==="0"||role==="4"){
+            //未审批 //审核中1
+            //审批同意 3  //审批不同意 2 4
+            item.approvalStatus =
+            item.approvalStatus === 0
+              ? "未审批"
+              : item.approvalStatus === 1 
+              ? "审核中"
+              : item.approvalStatus === 3?"审核通过" :"审核不通过"
+          } else{
+            item.approvalStatus =
+              item.approvalStatus === 0
+                ? "未审核"
+                : (item.approvalStatus === 1 || item.approvalStatus === 3 || item.approvalStatus === 4)
+                ? "审核通过"
+                : "审核不通过"; 
+          }      
           item.createTime = moment(item.createTime*1000).format(
             "YYYY-MM-DD HH:mm:ss"
           );
